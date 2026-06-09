@@ -45,6 +45,24 @@ public class GlobalExceptionHandler {
                 .body(body);
     }
 
+    // Bắt lỗi RuntimeException (thường là lỗi nghiệp vụ do throw new RuntimeException)
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 400);
+        body.put("message", ex.getMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    // Bắt lỗi xác thực (Sai mật khẩu, tài khoản không tồn tại, v.v.)
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthException(org.springframework.security.core.AuthenticationException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 401);
+        body.put("message", "Sai tên đăng nhập hoặc mật khẩu");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
     // Bắt tất cả lỗi còn lại
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {

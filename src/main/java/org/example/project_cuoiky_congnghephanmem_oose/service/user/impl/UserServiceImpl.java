@@ -21,6 +21,9 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
+import org.example.project_cuoiky_congnghephanmem_oose.dto.request.ChangePasswordRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class UserServiceImpl implements IUserService {
 
@@ -28,15 +31,18 @@ public class UserServiceImpl implements IUserService {
     private final IBookingRepository bookingRepository;
     private final IMembershipTierRepository membershipTierRepository;
     private final IPaymentRepository paymentRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(ICustomerRepository customerRepository,
                            IBookingRepository bookingRepository,
                            IMembershipTierRepository membershipTierRepository,
-                           IPaymentRepository paymentRepository) {
+                           IPaymentRepository paymentRepository,
+                           PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
         this.membershipTierRepository = membershipTierRepository;
         this.paymentRepository = paymentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -68,13 +74,31 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
 
         if (request.getUsername() != null && !request.getUsername().isBlank()) {
-            customer.setUsername(request.getUsername().trim());
+            String newUsername = request.getUsername().trim();
+            if (!newUsername.equals(customer.getUsername())) {
+                if (customerRepository.findByUsername(newUsername).isPresent()) {
+                    throw new RuntimeException("Tên đăng nhập đã tồn tại");
+                }
+                customer.setUsername(newUsername);
+            }
         }
         if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            customer.setEmail(request.getEmail().trim());
+            String newEmail = request.getEmail().trim();
+            if (!newEmail.equals(customer.getEmail())) {
+                if (customerRepository.findByEmail(newEmail).isPresent()) {
+                    throw new RuntimeException("Email đã được sử dụng bởi tài khoản khác");
+                }
+                customer.setEmail(newEmail);
+            }
         }
         if (request.getPhone() != null && !request.getPhone().isBlank()) {
-            customer.setPhone(request.getPhone().trim());
+            String newPhone = request.getPhone().trim();
+            if (!newPhone.equals(customer.getPhone())) {
+                if (customerRepository.findByPhone(newPhone).isPresent()) {
+                    throw new RuntimeException("Số điện thoại đã được sử dụng bởi tài khoản khác");
+                }
+                customer.setPhone(newPhone);
+            }
         }
         if (request.getDateOfBirth() != null) {
             customer.setDateOfBirth(request.getDateOfBirth());
@@ -121,6 +145,15 @@ public class UserServiceImpl implements IUserService {
         boolean expired = booking.getExpiredAt() != null && !booking.getExpiredAt().isAfter(LocalDateTime.now());
         boolean canRepay = "pending".equalsIgnoreCase(booking.getStatus()) && !expired;
 
+        double originalTotal = 0;
+        for (BookingDetails detail : booking.getBookingDetails()) {
+            long detailNights = java.time.temporal.ChronoUnit.DAYS.between(detail.getCheckinDate(), detail.getCheckoutDate());
+            if (detailNights <= 0) detailNights = 1;
+            originalTotal += detail.getRoom().getRoomType().getPriceRoom() * detailNights;
+        }
+        double discountAmount = originalTotal - booking.getTotalPrice();
+        if (discountAmount < 0) discountAmount = 0;
+
         return BookingHistoryResponse.builder()
                 .bookingID(booking.getBookingID())
                 .bookingDate(booking.getBookingDate())
@@ -130,6 +163,7 @@ public class UserServiceImpl implements IUserService {
                 .expiredAt(booking.getExpiredAt())
                 .canRepay(canRepay)
                 .expired(expired)
+                .discountAmount(discountAmount)
                 .rooms(rooms)
                 .checkin(first != null ? first.getCheckinDate() : null)
                 .checkout(first != null ? first.getCheckoutDate() : null)
@@ -170,5 +204,52 @@ public class UserServiceImpl implements IUserService {
                         }
                     });
         }
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String username, ChangePasswordRequest request) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), customer.getPassword())) {
+            throw new RuntimeException("Mật khẩu hiện tại không chính xác");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Mật khẩu mới và xác nhận mật khẩu không khớp");
+        }
+
+        customer.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        customerRepository.save(customer);
+    }
+
+    @Override
+    @Transactional
+    public void cancelBooking(String username, Integer bookingId) {
+        Customer customer = customerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn đặt phòng"));
+
+        if (booking.getCustomer().getUserID() != customer.getUserID()) {
+            throw new RuntimeException("Không có quyền hủy đơn đặt phòng này");
+        }
+
+        if (!"pending".equalsIgnoreCase(booking.getStatus())) {
+            throw new RuntimeException("Chỉ có thể hủy đơn đặt phòng đang chờ thanh toán");
+        }
+
+        booking.setStatus("cancelled");
+        bookingRepository.save(booking);
+
+        paymentRepository.findByBookingBookingIDOrderByPaymentIDDesc(booking.getBookingID())
+                .forEach(payment -> {
+                    if ("pending".equalsIgnoreCase(payment.getStatus())) {
+                        payment.setStatus("cancelled");
+                        paymentRepository.save(payment);
+                    }
+                });
     }
 }

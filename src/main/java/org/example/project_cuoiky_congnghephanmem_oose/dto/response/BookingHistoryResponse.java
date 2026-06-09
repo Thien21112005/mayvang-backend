@@ -18,6 +18,7 @@ public class BookingHistoryResponse {
     private LocalDateTime expiredAt;
     private boolean canRepay;
     private boolean expired;
+    private double discountAmount;
     private List<BookingRoomItemResponse> rooms;
     private LocalDate checkin;
     private LocalDate checkout;

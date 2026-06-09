@@ -53,4 +53,22 @@ public class UserController {
         String avatarUrl = avatarService.uploadAvatar(file, authentication.getName());
         return ResponseEntity.ok(new AvatarUploadResponse(avatarUrl, "Upload avatar thành công"));
     }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<?> changePassword(
+            Authentication authentication,
+            @Valid @RequestBody org.example.project_cuoiky_congnghephanmem_oose.dto.request.ChangePasswordRequest request
+    ) {
+        userService.changePassword(authentication.getName(), request);
+        return ResponseEntity.ok().body(java.util.Map.of("message", "Đổi mật khẩu thành công"));
+    }
+
+    @PutMapping("/me/bookings/{bookingId}/cancel")
+    public ResponseEntity<?> cancelBooking(
+            Authentication authentication,
+            @PathVariable Integer bookingId
+    ) {
+        userService.cancelBooking(authentication.getName(), bookingId);
+        return ResponseEntity.ok().body(java.util.Map.of("message", "Đã hủy đơn đặt phòng"));
+    }
 }

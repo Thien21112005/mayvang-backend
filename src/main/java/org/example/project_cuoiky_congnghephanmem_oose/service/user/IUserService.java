@@ -6,8 +6,12 @@ import org.example.project_cuoiky_congnghephanmem_oose.dto.response.UserProfileR
 
 import java.util.List;
 
+import org.example.project_cuoiky_congnghephanmem_oose.dto.request.ChangePasswordRequest;
+
 public interface IUserService {
     UserProfileResponse getMyProfile(String username);
     UserProfileResponse updateMyProfile(String username, UpdateProfileRequest request);
     List<BookingHistoryResponse> getMyBookingHistory(String username);
+    void changePassword(String username, ChangePasswordRequest request);
+    void cancelBooking(String username, Integer bookingId);
 }
