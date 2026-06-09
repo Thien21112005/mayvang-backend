@@ -48,4 +48,14 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã OTP không chính xác hoặc đã hết hạn!");
         }
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody org.example.project_cuoiky_congnghephanmem_oose.dto.request.ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request.getEmail(), request.getNewPassword());
+            return ResponseEntity.ok("Đặt lại mật khẩu thành công!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

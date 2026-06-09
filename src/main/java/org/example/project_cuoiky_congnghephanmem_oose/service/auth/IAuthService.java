@@ -11,4 +11,5 @@ public interface IAuthService {
     AuthResponse login(LoginRequest request);
     void forgotPassword(String email);
     boolean verifyOtp(String email, String otpCode);
+    void resetPassword(String email, String newPassword);
 }

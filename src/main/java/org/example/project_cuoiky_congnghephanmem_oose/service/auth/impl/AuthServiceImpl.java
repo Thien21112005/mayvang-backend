@@ -101,4 +101,13 @@ public class AuthServiceImpl implements IAuthService {
     public boolean verifyOtp(String email, String otpCode) {
         return otpService.validateOtp(email, otpCode);
     }
+
+    @Override
+    public void resetPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email không tồn tại trong hệ thống!"));
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
