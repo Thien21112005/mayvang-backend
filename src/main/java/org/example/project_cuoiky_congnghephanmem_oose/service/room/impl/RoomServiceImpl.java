@@ -47,9 +47,8 @@ public class RoomServiceImpl implements IRoomService {
         int requested  = request.getNumberOfRooms();
         boolean enough = totalFound >= requested;
 
-        // Lấy đúng số phòng yêu cầu
+        // Trả về TẤT CẢ các phòng khả dụng để người dùng tự do lựa chọn
         List<RoomResponse> result = allAvailable.stream()
-                .limit(requested)
                 .map(this::toResponse)
                 .collect(Collectors.toList());
 
