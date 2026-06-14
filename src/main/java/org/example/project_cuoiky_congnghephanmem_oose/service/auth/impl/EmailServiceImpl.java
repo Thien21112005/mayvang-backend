@@ -22,7 +22,7 @@ public class EmailServiceImpl implements IEmailService {
     private String fromEmail;
 
     // Tên người gửi hiển thị trong hộp thư người nhận (đổi được trong application.properties)
-    @Value("${app.mail.sender-name:Hotel Style}")
+    @Value("${app.mail.sender-name:Mây Vàng}")
     private String senderName;
 
     public EmailServiceImpl(JavaMailSender mailSender) {
@@ -50,7 +50,7 @@ public class EmailServiceImpl implements IEmailService {
             // Header
             + "<tr><td align=\"center\" style=\"padding:46px 40px 38px;background:linear-gradient(135deg,#FF8C00,#D4A017);\">"
             +   "<div style=\"font-size:11px;letter-spacing:6px;color:rgba(255,255,255,0.85);text-transform:uppercase;margin-bottom:12px;\">Luxury Experience</div>"
-            +   "<div style=\"font-size:30px;letter-spacing:8px;color:#ffffff;font-weight:700;text-transform:uppercase;\">HOTEL STYLE</div>"
+            +   "<div style=\"font-size:30px;letter-spacing:8px;color:#ffffff;font-weight:700;text-transform:uppercase;\">MÂY VÀNG</div>"
             +   "<div style=\"width:48px;height:2px;background:rgba(255,255,255,0.6);margin:18px auto 0;\"></div>"
             +   "<div style=\"margin-top:16px;color:#ffffff;font-size:16px;letter-spacing:1px;\">" + title + "</div>"
             + "</td></tr>"
@@ -60,7 +60,7 @@ public class EmailServiceImpl implements IEmailService {
             + "<tr><td align=\"center\" style=\"padding:30px 40px;background:#faf7f0;border-top:1px solid #efe6d4;\">"
             +   "<div style=\"font-style:italic;color:#b08a1e;font-size:15px;\">\"Chọn chúng tôi, chọn phong cách!\"</div>"
             +   "<div style=\"margin-top:14px;color:#b8ab9c;font-size:11px;letter-spacing:1px;text-transform:uppercase;\">"
-            +     "&copy; 2026 Hotel Style &middot; S&#7889; 1 V&#245; V&#259;n Ng&#7847;n, Th&#7911; &#272;&#7913;c, TP.HCM</div>"
+            +     "&copy; 2026 Mây Vàng &middot; S&#7889; 1 V&#245; V&#259;n Ng&#7847;n, Th&#7911; &#272;&#7913;c, TP.HCM</div>"
             + "</td></tr>"
             + "</table></td></tr></table></div>";
     }
@@ -71,14 +71,14 @@ public class EmailServiceImpl implements IEmailService {
         try {
             String body = ""
                 + "<h2 style=\"margin:0 0 14px;color:#4a3f35;font-size:22px;font-weight:600;text-align:center;\">Mã xác thực của bạn</h2>"
-                + "<p style=\"margin:0 0 28px;color:#7a6e66;text-align:center;\">Vui lòng nhập mã OTP dưới đây để hoàn tất xác thực tài khoản tại <b>Hotel Style</b>.</p>"
+                + "<p style=\"margin:0 0 28px;color:#7a6e66;text-align:center;\">Vui lòng nhập mã OTP dưới đây để hoàn tất xác thực tài khoản tại <b>Mây Vàng</b>.</p>"
                 + "<div style=\"text-align:center;margin-bottom:28px;\">"
                 +   "<div style=\"display:inline-block;background:#fbf6ec;border:1px solid #e7d9bd;border-radius:14px;padding:24px 36px;\">"
                 +     "<span style=\"font-family:'Consolas',monospace;font-size:40px;font-weight:700;letter-spacing:12px;color:#c46a10;\">" + otp + "</span>"
                 +   "</div>"
                 + "</div>"
                 + "<p style=\"margin:0;color:#a8998d;font-size:13px;text-align:center;\">Mã có hiệu lực trong vòng <b style=\"color:#c46a10;\">5 phút</b>. Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>";
-            sendHtml(toEmail, "[HOTEL STYLE] Mã OTP xác thực tài khoản", wrapEmail("Xác thực tài khoản", body));
+            sendHtml(toEmail, "[Mây Vàng] Mã OTP xác thực tài khoản", wrapEmail("Xác thực tài khoản", body));
         } catch (Exception e) {
             throw new RuntimeException("Gửi mail OTP thất bại: " + e.getMessage());
         }
@@ -100,7 +100,7 @@ public class EmailServiceImpl implements IEmailService {
 
             String body = ""
                 + "<p style=\"margin:0 0 6px;font-size:17px;\">Xin chào <b style=\"color:#1d1d1f;\">" + customer.getUsername() + "</b>,</p>"
-                + "<p style=\"margin:0 0 26px;color:#7a6e66;\">Cảm ơn quý khách đã tin tưởng lựa chọn <b>Hotel Style</b>. Chúng tôi rất hân hạnh được phục vụ quý khách trong kỳ nghỉ sắp tới.</p>"
+                + "<p style=\"margin:0 0 26px;color:#7a6e66;\">Cảm ơn quý khách đã tin tưởng lựa chọn <b>Mây Vàng</b>. Chúng tôi rất hân hạnh được phục vụ quý khách trong kỳ nghỉ sắp tới.</p>"
                 + "<div style=\"background:#fbf6ec;border:1px solid #e7d9bd;border-radius:16px;padding:22px 24px;margin-bottom:30px;\">"
                 +   summaryRow("Mã booking", "#" + booking.getBookingID())
                 +   summaryRow("Trạng thái", booking.getStatus())
@@ -117,13 +117,13 @@ public class EmailServiceImpl implements IEmailService {
                 +   "</tr></thead><tbody>" + rows + "</tbody></table>"
                 + sectionTitle("Hướng dẫn nhận phòng")
                 + "<div style=\"background:#faf7f0;border:1px solid #efe6d4;border-radius:14px;padding:22px 24px;\">"
-                +   guideRow("Địa chỉ khách sạn", "Số 1 Võ Văn Ngân, Phường Linh Chiểu, Thành phố Thủ Đức, TP. Hồ Chí Minh.")
+                +   guideRow("Địa chỉ", "Khách sạn Mây Vàng — Số 1 Võ Văn Ngân, Phường Linh Chiểu, Thành phố Thủ Đức, TP. Hồ Chí Minh.")
                 +   guideRow("Thời gian", "Nhận phòng từ 14:00 &middot; Trả phòng trước 12:00 trưa hôm sau.")
                 +   guideRowLast("Giấy tờ cần chuẩn bị", "Vui lòng mang theo CMND/CCCD hoặc Hộ chiếu bản gốc của người đặt phòng khi làm thủ tục nhận phòng.")
                 + "</div>";
 
             sendHtml(customer.getEmail(),
-                    "[HOTEL STYLE] Xác nhận đặt phòng thành công - #" + booking.getBookingID(),
+                    "[Mây Vàng] Xác nhận đặt phòng thành công - #" + booking.getBookingID(),
                     wrapEmail("Xác nhận đặt phòng", body));
         } catch (Exception e) {
             throw new RuntimeException("Gửi mail xác nhận thất bại: " + e.getMessage());
@@ -142,7 +142,7 @@ public class EmailServiceImpl implements IEmailService {
             }
             String body = ""
                 + "<p style=\"margin:0 0 6px;font-size:17px;\">Xin chào <b style=\"color:#1d1d1f;\">" + customer.getUsername() + "</b>,</p>"
-                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Cảm ơn quý khách đã lựa chọn <b>Hotel Style</b> cho kỳ nghỉ vừa qua. Thật vinh hạnh khi được đồng hành cùng quý khách, và chúng tôi hy vọng đã mang đến những trải nghiệm trọn vẹn nhất.</p>"
+                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Cảm ơn quý khách đã lựa chọn <b>Mây Vàng</b> cho kỳ nghỉ vừa qua. Thật vinh hạnh khi được đồng hành cùng quý khách, và chúng tôi hy vọng đã mang đến những trải nghiệm trọn vẹn nhất.</p>"
                 + "<div style=\"background:#fbf6ec;border:1px solid #e7d9bd;border-radius:16px;padding:22px 24px;margin-bottom:26px;\">"
                 +   summaryRow("Mã booking", "#" + booking.getBookingID())
                 +   stay
@@ -150,7 +150,7 @@ public class EmailServiceImpl implements IEmailService {
                 + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Đánh giá của quý khách là nguồn động viên quý giá giúp chúng tôi hoàn thiện hơn mỗi ngày. Quý khách có thể chia sẻ cảm nhận trong mục <b>Lịch sử đặt phòng</b> trên website.</p>"
                 + "<p style=\"margin:0;color:#7a6e66;\">Hẹn gặp lại quý khách trong những hành trình sắp tới!</p>";
             sendHtml(customer.getEmail(),
-                    "[HOTEL STYLE] Cảm ơn quý khách đã lưu trú - #" + booking.getBookingID(),
+                    "[Mây Vàng] Cảm ơn quý khách đã lưu trú - #" + booking.getBookingID(),
                     wrapEmail("Cảm ơn quý khách", body));
         } catch (Exception e) {
             System.err.println("Gửi mail cảm ơn check-out thất bại: " + e.getMessage());
@@ -165,22 +165,22 @@ public class EmailServiceImpl implements IEmailService {
             String comment = review.getComment() != null ? review.getComment() : "";
             String body = ""
                 + "<p style=\"margin:0 0 6px;font-size:17px;\">Xin chào <b style=\"color:#1d1d1f;\">" + customer.getUsername() + "</b>,</p>"
-                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Cảm ơn quý khách đã dành thời gian gửi đánh giá cho <b>Hotel Style</b>. Mỗi chia sẻ của quý khách đều giúp chúng tôi phục vụ ngày một tốt hơn.</p>"
+                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Cảm ơn quý khách đã dành thời gian gửi đánh giá cho <b>Mây Vàng</b>. Mỗi chia sẻ của quý khách đều giúp chúng tôi phục vụ ngày một tốt hơn.</p>"
                 + "<div style=\"background:#fbf6ec;border:1px solid #e7d9bd;border-radius:16px;padding:22px 24px;margin-bottom:26px;\">"
                 +   summaryRow("Mức đánh giá", String.format("%.1f", review.getRating()) + " / 5.0")
                 +   "<div style=\"border-top:1px dashed #e0d2b6;margin:12px 0;\"></div>"
                 +   "<div style=\"color:#7a6e66;font-style:italic;\">\"" + comment + "\"</div>"
                 + "</div>"
-                + "<p style=\"margin:0;color:#7a6e66;\">Khách sạn sẽ xem xét và có thể phản hồi đánh giá của quý khách trong thời gian sớm nhất. Trân trọng cảm ơn!</p>";
+                + "<p style=\"margin:0;color:#7a6e66;\">Mây Vàng sẽ xem xét và có thể phản hồi đánh giá của quý khách trong thời gian sớm nhất. Trân trọng cảm ơn!</p>";
             sendHtml(customer.getEmail(),
-                    "[HOTEL STYLE] Cảm ơn bạn đã gửi đánh giá",
+                    "[Mây Vàng] Cảm ơn bạn đã gửi đánh giá",
                     wrapEmail("Cảm ơn đánh giá của bạn", body));
         } catch (Exception e) {
             System.err.println("Gửi mail cảm ơn đánh giá thất bại: " + e.getMessage());
         }
     }
 
-    // ── Khi khách sạn phản hồi đánh giá ─────────────────────────────────────────
+    // ── Khi Mây Vàng phản hồi đánh giá ─────────────────────────────────────────
     @Override
     public void sendAdminReplyEmail(Customer customer, Review review) {
         if (customer == null || customer.getEmail() == null) return;
@@ -189,18 +189,18 @@ public class EmailServiceImpl implements IEmailService {
             String reply = review.getAdminReply() != null ? review.getAdminReply() : "";
             String body = ""
                 + "<p style=\"margin:0 0 6px;font-size:17px;\">Xin chào <b style=\"color:#1d1d1f;\">" + customer.getUsername() + "</b>,</p>"
-                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Khách sạn <b>Hotel Style</b> đã gửi phản hồi cho đánh giá của quý khách. Xin chân thành cảm ơn những góp ý quý báu.</p>"
+                + "<p style=\"margin:0 0 24px;color:#7a6e66;\">Khách sạn <b>Mây Vàng</b> đã gửi phản hồi cho đánh giá của quý khách. Xin chân thành cảm ơn những góp ý quý báu.</p>"
                 + "<div style=\"background:#f7f7f8;border:1px solid #e6e6ea;border-radius:14px;padding:18px 20px;margin-bottom:18px;\">"
                 +   "<div style=\"font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#9a9aa2;margin-bottom:6px;\">Đánh giá của bạn</div>"
                 +   "<div style=\"color:#555;font-style:italic;\">\"" + comment + "\"</div>"
                 + "</div>"
                 + "<div style=\"background:#fbf6ec;border:1px solid #e7d9bd;border-left:3px solid #D4A017;border-radius:14px;padding:18px 20px;\">"
-                +   "<div style=\"font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#b8860b;margin-bottom:6px;\">Phản hồi từ khách sạn</div>"
+                +   "<div style=\"font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:#b8860b;margin-bottom:6px;\">Phản hồi từ Mây Vàng</div>"
                 +   "<div style=\"color:#4a3f35;\">" + reply + "</div>"
                 + "</div>";
             sendHtml(customer.getEmail(),
-                    "[HOTEL STYLE] Khách sạn đã phản hồi đánh giá của bạn",
-                    wrapEmail("Phản hồi từ khách sạn", body));
+                    "[Mây Vàng] Mây Vàng đã phản hồi đánh giá của bạn",
+                    wrapEmail("Phản hồi từ Mây Vàng", body));
         } catch (Exception e) {
             System.err.println("Gửi mail phản hồi đánh giá thất bại: " + e.getMessage());
         }

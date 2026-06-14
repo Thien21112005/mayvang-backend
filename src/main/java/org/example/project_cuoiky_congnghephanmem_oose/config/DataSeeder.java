@@ -25,7 +25,7 @@ public class DataSeeder implements CommandLineRunner {
     @Value("${app.admin.password:admin123}")
     private String adminPassword;
 
-    @Value("${app.admin.email:admin@hotelstyle.com}")
+    @Value("${app.admin.email:admin@mayvang.com}")
     private String adminEmail;
 
     public DataSeeder(IManagerRepository managerRepository,

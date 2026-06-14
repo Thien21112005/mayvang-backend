@@ -115,6 +115,12 @@ public class ReviewService {
         return null;
     }
 
+    public void removeAdminReply(Review review) {
+        review.setAdminReply(null);
+        review.setReplyDate(null);
+        reviewRepository.save(review);
+    }
+
     public List<String> uploadReviewImages(MultipartFile[] files, String username) {
         List<String> imageUrls = new ArrayList<>();
         if (files == null || files.length == 0) return imageUrls;
@@ -142,6 +148,7 @@ public class ReviewService {
         dto.setRating(review.getRating());
         dto.setComment(review.getComment());
         dto.setReviewDate(review.getReviewDate());
+        dto.setAdminReply(review.getAdminReply());
         dto.setReplyDate(review.getReplyDate());
 
         dto.setCleanlinessRating(review.getCleanlinessRating());
