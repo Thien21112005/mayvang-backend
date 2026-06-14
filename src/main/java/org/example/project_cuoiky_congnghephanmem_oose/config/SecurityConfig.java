@@ -35,12 +35,17 @@ public class SecurityConfig {
                                 "/error",
                                 "/api/auth/login",
                                 "/api/auth/register",
+                                "/api/auth/register/verify",
+                                "/api/auth/google",
                                 "/api/auth/forgot-password",
                                 "/api/auth/verify-otp",
+                                "/api/auth/reset-password",
                                 "/api/rooms",
                                 "/api/rooms/search",
                                 "/api/room-types",
-                                "/api/payments/vnpay-return"
+                                "/api/payments/vnpay-return",
+                                "/api/reviews/public",
+                                "/api/scheduler/stats"
                         ).permitAll()
 
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
