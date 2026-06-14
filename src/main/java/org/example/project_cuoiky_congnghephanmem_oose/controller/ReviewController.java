@@ -98,4 +98,14 @@ public class ReviewController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{id}/reply")
+    public ResponseEntity<?> deleteAdminReply(@PathVariable int id) {
+        Review review = reviewService.getReviewById(id);
+        if (review == null) {
+            return ResponseEntity.notFound().build();
+        }
+        reviewService.removeAdminReply(review);
+        return ResponseEntity.ok(Map.of("message", "Đã xóa phản hồi"));
+    }
 }
