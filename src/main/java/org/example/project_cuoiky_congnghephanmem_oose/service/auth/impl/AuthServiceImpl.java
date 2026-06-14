@@ -163,6 +163,12 @@ public class AuthServiceImpl implements IAuthService {
             customer.setAuthProvider("GOOGLE");
             customerRepository.save(customer);
             user = customer;
+        } else {
+            // Đã có tài khoản Google -> cập nhật avatar mới nhất từ Google
+            if (profile.picture() != null && !profile.picture().isBlank()) {
+                user.setAvatar(profile.picture());
+                userRepository.save(user);
+            }
         }
 
         String role = user.getRole().name();
@@ -216,7 +222,12 @@ public class AuthServiceImpl implements IAuthService {
     private String generateUniqueUsername(String email, String name) {
         String base;
         if (name != null && !name.isBlank()) {
-            base = name.trim().toLowerCase().replaceAll("[^a-z0-9]", "");
+            // Chuẩn hóa Unicode -> tách dấu -> xóa dấu -> giữ lại a-z và số
+            String normalized = java.text.Normalizer.normalize(name.trim(), java.text.Normalizer.Form.NFD);
+            normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+            // Xử lý thêm ký tự đặc biệt tiếng Việt: đ -> d
+            normalized = normalized.replace('đ', 'd').replace('Đ', 'D');
+            base = normalized.toLowerCase().replaceAll("[^a-z0-9]", "");
         } else {
             base = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9]", "");
         }
