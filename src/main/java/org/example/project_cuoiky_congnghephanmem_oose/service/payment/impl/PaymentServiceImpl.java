@@ -109,7 +109,9 @@ public class PaymentServiceImpl implements IPaymentService {
                 return result;
             }
 
-            int bookingId = Integer.parseInt(params.get("vnp_TxnRef"));
+            // TxnRef có dạng "bookingId_timestamp" → tách lấy bookingId
+            String txnRef = params.get("vnp_TxnRef");
+            int bookingId = Integer.parseInt(txnRef.contains("_") ? txnRef.split("_")[0] : txnRef);
             String responseCode = params.get("vnp_ResponseCode");
             String transactionNo = params.getOrDefault("vnp_TransactionNo", "");
             String amount = params.getOrDefault("vnp_Amount", "0");

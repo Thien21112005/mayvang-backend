@@ -34,19 +34,22 @@ public class UserServiceImpl implements IUserService {
     private final IPaymentRepository paymentRepository;
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final org.example.project_cuoiky_congnghephanmem_oose.util.JwtUtil jwtUtil;
 
     public UserServiceImpl(ICustomerRepository customerRepository,
                            IBookingRepository bookingRepository,
                            IMembershipTierRepository membershipTierRepository,
                            IPaymentRepository paymentRepository,
                            IUserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           org.example.project_cuoiky_congnghephanmem_oose.util.JwtUtil jwtUtil) {
         this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
         this.membershipTierRepository = membershipTierRepository;
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -79,6 +82,7 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
 
         boolean isGoogle = customer.isGoogleAccount();
+        boolean usernameChanged = false;
 
         // Tài khoản Google: KHÔNG cho đổi username / email / avatar (chỉ đổi được SĐT, ngày sinh)
         if (!isGoogle) {
@@ -89,6 +93,7 @@ public class UserServiceImpl implements IUserService {
                         throw new RuntimeException("Tên đăng nhập đã tồn tại");
                     }
                     customer.setUsername(newUsername);
+                    usernameChanged = true;
                 }
             }
             if (request.getEmail() != null && !request.getEmail().isBlank()) {
@@ -120,7 +125,17 @@ public class UserServiceImpl implements IUserService {
         }
 
         customerRepository.save(customer);
-        return getMyProfile(customer.getUsername());
+
+        // Lấy profile mới với username đã cập nhật
+        UserProfileResponse response = getMyProfile(customer.getUsername());
+
+        // Nếu username thay đổi → tạo JWT mới để frontend thay thế token cũ
+        if (usernameChanged) {
+            String newToken = jwtUtil.generateToken(customer.getUsername(), customer.getRole().name());
+            response.setToken(newToken);
+        }
+
+        return response;
     }
 
     @Override
