@@ -27,9 +27,9 @@ public interface IBookingRepository extends JpaRepository<Booking, Integer> {
             LocalDateTime from, LocalDateTime to, List<String> statuses
     );
 
-    // Khách hàng tiềm năng: gom theo khách, tính mọi booking đã thanh toán (kể cả đã nhận/trả phòng)
+    // Khách hàng tiềm năng (RFM): gom theo khách, tính booking đã thanh toán
     @Query("""
-    SELECT b.customer, COUNT(b), SUM(b.totalPrice)
+    SELECT b.customer, COUNT(b), SUM(b.totalPrice), MAX(b.bookingDate)
     FROM Booking b
     WHERE b.status IN ('confirmed', 'checked_in', 'checked_out')
     GROUP BY b.customer

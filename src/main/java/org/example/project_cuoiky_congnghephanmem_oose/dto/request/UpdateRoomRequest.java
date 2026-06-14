@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class UpdateRoomRequest {
     private int typeID;
     private String status;
+    private String statusNote; // Lý do bảo trì / ngừng kinh doanh
 
     // Khoảng ngày bảo trì / ngừng hoạt động (chỉ dùng khi status = maintenance/inactive)
     private LocalDate maintenanceStart;

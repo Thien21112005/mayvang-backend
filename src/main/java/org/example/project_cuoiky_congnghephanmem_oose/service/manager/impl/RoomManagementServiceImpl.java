@@ -96,10 +96,12 @@ public class RoomManagementServiceImpl implements IRoomManagementService {
                 // Lưu khoảng ngày bảo trì/ngừng hoạt động (có thể null = vô thời hạn tới khi admin gỡ)
                 room.setMaintenanceStart(request.getMaintenanceStart());
                 room.setMaintenanceEnd(request.getMaintenanceEnd());
+                room.setStatusNote(request.getStatusNote());
             } else {
                 // Quay lại hoạt động bình thường -> xóa lịch bảo trì
                 room.setMaintenanceStart(null);
                 room.setMaintenanceEnd(null);
+                room.setStatusNote(null);
             }
         }
 
@@ -114,6 +116,7 @@ public class RoomManagementServiceImpl implements IRoomManagementService {
                 room.getRoomNumber(),
                 dynamicStatus,
                 room.getDescription(),
+                room.getStatusNote(),
                 type != null ? type.getTypeID() : 0,
                 type != null ? type.getTypeName() : "N/A",
                 room.getEffectivePrice(),

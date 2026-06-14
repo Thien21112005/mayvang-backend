@@ -55,6 +55,7 @@ public class BookingExpirationScheduler {
             room.setStatus("available");
             room.setMaintenanceStart(null);
             room.setMaintenanceEnd(null);
+            room.setStatusNote(null);
         }
         roomRepository.saveAll(expired);
         System.out.println("[ROOM_MAINTENANCE_JOB] Da kich hoat lai " + expired.size() + " phong het han bao tri luc " + today);

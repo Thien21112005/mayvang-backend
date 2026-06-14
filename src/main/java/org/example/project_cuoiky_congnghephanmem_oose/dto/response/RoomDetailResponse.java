@@ -12,6 +12,7 @@ public class RoomDetailResponse {
     private String roomNumber;
     private String status;
     private String description;
+    private String statusNote;
     private int typeID;
     private String typeName;
     private double priceRoom;

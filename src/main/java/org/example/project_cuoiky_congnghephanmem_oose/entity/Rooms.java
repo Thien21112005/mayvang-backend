@@ -20,6 +20,7 @@ public class Rooms {
     private String roomNumber;
     private String status;
     private String description;
+    private String statusNote; // Lý do bảo trì / ngừng kinh doanh
 
     @Column(columnDefinition = "double default 0")
     private double priceExtra;

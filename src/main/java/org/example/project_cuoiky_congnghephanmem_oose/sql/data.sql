@@ -44,7 +44,7 @@ INSERT INTO RoomTypeBeds (quantity, typeID, bedID) VALUES
 INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('B101', 'available', 'View phố, yên tĩnh', 1),
                                                                 ('B102', 'available', 'View phố', 1),
-                                                                ('B103', 'maintenance', 'Đang sửa điều hòa', 1),
+                                                                ('B103', 'maintenance', 'View phố, ban công nhỏ', 1),
                                                                 ('B104', 'available', '', 1),
                                                                 ('B105', 'available', 'View vườn nhỏ, thoáng mát', 1),
                                                                 ('B106', 'available', '', 1),
@@ -71,7 +71,7 @@ INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('B307', 'available', 'View mái nhà cổ khu phố', 1),
                                                                 ('B308', 'available', '', 1),
                                                                 ('B309', 'available', '', 1),
-                                                                ('B310', 'inactive', 'Ngừng kinh doanh tạm thời', 1),
+                                                                ('B310', 'inactive', 'Tầng 3, view sân trong yên tĩnh', 1),
                                                                 ('B401', 'available', 'Tầng 4, view toàn cảnh khu trung tâm', 1),
                                                                 ('B402', 'available', '', 1),
                                                                 ('B403', 'available', '', 1),
@@ -89,7 +89,7 @@ INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('B505', 'available', '', 1),
                                                                 ('S601', 'available', 'View sông, ban công nhỏ', 2),
                                                                 ('S602', 'available', 'View sông', 2),
-                                                                ('S603', 'maintenance', 'Sửa cửa sổ', 2),
+                                                                ('S603', 'maintenance', 'View hồ bơi, ban công riêng', 2),
                                                                 ('S604', 'available', 'View hồ bơi, gần khu BBQ', 2),
                                                                 ('S605', 'available', '', 2),
                                                                 ('S606', 'available', 'Ban công riêng hướng sông', 2),
@@ -101,7 +101,7 @@ INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('S702', 'available', '', 2),
                                                                 ('S703', 'available', 'Gần spa & gym', 2),
                                                                 ('S704', 'available', '', 2),
-                                                                ('S705', 'maintenance', 'Sửa hệ thống điện', 2),
+                                                                ('S705', 'maintenance', 'Tầng 7, view thành phố và sông', 2),
                                                                 ('S706', 'available', '', 2),
                                                                 ('S707', 'available', 'View hồ bơi vô cực', 2),
                                                                 ('S708', 'available', '', 2),
@@ -131,7 +131,7 @@ INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('D1102', 'available', '', 3),
                                                                 ('D1103', 'available', 'Gần spa & gym, tiện nghi', 3),
                                                                 ('D1104', 'available', '', 3),
-                                                                ('D1105', 'maintenance', 'Thay thảm sàn', 3),
+                                                                ('D1105', 'maintenance', 'View núi, không gian thoáng đãng', 3),
                                                                 ('R1201', 'available', 'Royal góc – view panorama', 4),
                                                                 ('R1202', 'available', 'Royal trung tâm', 4),
                                                                 ('R1203', 'available', 'View biển từ ban công riêng', 4),
@@ -150,7 +150,7 @@ INSERT INTO Rooms (roomNumber, status, description, typeID) VALUES
                                                                 ('FS1602', 'available', 'View vườn nhiệt đới, sân chơi trẻ em gần kề', 6),
                                                                 ('FS1603', 'available', '', 6),
                                                                 ('FS1604', 'available', 'Tầng cao, toàn cảnh núi và thành phố', 6),
-                                                                ('FS1605', 'inactive', 'Đang cải tạo', 6),
+                                                                ('FS1605', 'inactive', 'Family Suite – view hồ bơi và sân vườn', 6),
                                                                 ('B111', 'available', '', 1),
                                                                 ('B112', 'available', 'View công viên, không gian xanh', 1),
                                                                 ('B113', 'available', '', 1),
@@ -216,3 +216,11 @@ UPDATE Rooms SET priceExtra = 400000 WHERE roomNumber = 'PS1701';
 UPDATE Rooms SET priceExtra = 600000 WHERE roomNumber = 'PS1702';
 UPDATE Rooms SET priceExtra = 500000 WHERE roomNumber = 'PS1703';
 UPDATE Rooms SET priceExtra = 450000 WHERE roomNumber = 'PS1704';
+
+-- Lý do bảo trì / ngừng kinh doanh: lưu riêng vào statusNote để không đè mất ngoại cảnh trong description
+UPDATE Rooms SET statusNote = 'Đang sửa điều hòa' WHERE roomNumber = 'B103';
+UPDATE Rooms SET statusNote = 'Ngừng kinh doanh tạm thời' WHERE roomNumber = 'B310';
+UPDATE Rooms SET statusNote = 'Sửa cửa sổ' WHERE roomNumber = 'S603';
+UPDATE Rooms SET statusNote = 'Sửa hệ thống điện' WHERE roomNumber = 'S705';
+UPDATE Rooms SET statusNote = 'Thay thảm sàn' WHERE roomNumber = 'D1105';
+UPDATE Rooms SET statusNote = 'Đang cải tạo' WHERE roomNumber = 'FS1605';
