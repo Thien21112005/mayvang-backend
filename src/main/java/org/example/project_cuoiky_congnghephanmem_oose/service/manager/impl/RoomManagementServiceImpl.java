@@ -53,17 +53,20 @@ public class RoomManagementServiceImpl implements IRoomManagementService {
         }
 
         List<Integer> bookedRoomIdsForTargetDate = bookingRepository.findBookedRoomIdsByDate(targetDate);
+        final LocalDate viewDate = targetDate; // cần biến final để dùng trong lambda
 
         return roomRepository.findAll().stream()
                 .map(room -> {
-                    String currentStatus = room.getStatus();
+                    String currentStatus;
 
-                    if (!"maintenance".equalsIgnoreCase(currentStatus) && !"inactive".equalsIgnoreCase(currentStatus)) {
-                        if (bookedRoomIdsForTargetDate.contains(room.getRoomID())) {
-                            currentStatus = "booked";
-                        } else {
-                            currentStatus = "available";
-                        }
+                    // Phòng bảo trì/ngừng hoạt động ĐÚNG ngày đang xem -> hiện trạng thái đó;
+                    // ngoài khoảng đó thì tính bình thường (booked/available theo ngày).
+                    if (room.isOutOfServiceOn(viewDate)) {
+                        currentStatus = room.getStatus();
+                    } else if (bookedRoomIdsForTargetDate.contains(room.getRoomID())) {
+                        currentStatus = "booked";
+                    } else {
+                        currentStatus = "available";
                     }
 
                     return toResponseDynamic(room, currentStatus);
@@ -83,10 +86,21 @@ public class RoomManagementServiceImpl implements IRoomManagementService {
         }
 
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            if (request.getStatus().equalsIgnoreCase("booked")) {
+            String newStatus = request.getStatus();
+            if (newStatus.equalsIgnoreCase("booked")) {
                 throw new RuntimeException("Không được phép gán trạng thái 'Đã đặt' thủ công. Vui lòng tạo Booking.");
             }
-            room.setStatus(request.getStatus());
+            room.setStatus(newStatus);
+
+            if (newStatus.equalsIgnoreCase("maintenance") || newStatus.equalsIgnoreCase("inactive")) {
+                // Lưu khoảng ngày bảo trì/ngừng hoạt động (có thể null = vô thời hạn tới khi admin gỡ)
+                room.setMaintenanceStart(request.getMaintenanceStart());
+                room.setMaintenanceEnd(request.getMaintenanceEnd());
+            } else {
+                // Quay lại hoạt động bình thường -> xóa lịch bảo trì
+                room.setMaintenanceStart(null);
+                room.setMaintenanceEnd(null);
+            }
         }
 
         roomRepository.save(room);
@@ -102,8 +116,10 @@ public class RoomManagementServiceImpl implements IRoomManagementService {
                 room.getDescription(),
                 type != null ? type.getTypeID() : 0,
                 type != null ? type.getTypeName() : "N/A",
-                type != null ? type.getPriceRoom() : 0,
-                type != null ? type.getOccupancy() : 0
+                room.getEffectivePrice(),
+                type != null ? type.getOccupancy() : 0,
+                room.getMaintenanceStart(),
+                room.getMaintenanceEnd()
         );
     }
 }

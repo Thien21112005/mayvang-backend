@@ -22,4 +22,5 @@ public class BookingHistoryResponse {
     private List<BookingRoomItemResponse> rooms;
     private LocalDate checkin;
     private LocalDate checkout;
+    private boolean isReviewed;
 }

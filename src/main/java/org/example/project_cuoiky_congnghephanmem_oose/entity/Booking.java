@@ -32,6 +32,9 @@ public class Booking {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<Payment> payments;
 
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private Review review;
+
     public Booking createBooking() {
         return null;
     }

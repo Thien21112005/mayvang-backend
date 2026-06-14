@@ -72,8 +72,8 @@ public class BookingServiceImpl implements IBookingService {
         }
 
         for (Rooms room : selectedRooms) {
-            if (!"available".equalsIgnoreCase(room.getStatus())) {
-                throw new RuntimeException("Phòng " + room.getRoomNumber() + " hiện không khả dụng");
+            if (room.isOutOfServiceForStay(request.getCheckin(), request.getCheckout())) {
+                throw new RuntimeException("Phòng " + room.getRoomNumber() + " đang bảo trì/ngừng hoạt động trong khoảng ngày này");
             }
             if (room.getRoomType() == null || room.getRoomType().getOccupancy() < guestsPerRoom) {
                 throw new RuntimeException("Phòng " + room.getRoomNumber() + " không đủ sức chứa");
@@ -90,7 +90,7 @@ public class BookingServiceImpl implements IBookingService {
         List<BookingDetails> bookingDetails = new ArrayList<>();
 
         for (Rooms room : selectedRooms) {
-            double originalPrice = room.getRoomType().getPriceRoom();
+            double originalPrice = room.getEffectivePrice();
             double discountedPricePerNight = originalPrice * (1 - discountRate);
             double subTotal = discountedPricePerNight * nights;
 

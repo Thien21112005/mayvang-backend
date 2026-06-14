@@ -3,6 +3,8 @@ package org.example.project_cuoiky_congnghephanmem_oose.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.example.project_cuoiky_congnghephanmem_oose.enums.Role;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +23,11 @@ public class Customer extends User {
 
     public Customer() {
         super();
+    }
+
+    @Override
+    public Role getRole() {
+        return Role.CUSTOMER;
     }
 
     public Booking makeBooking() {

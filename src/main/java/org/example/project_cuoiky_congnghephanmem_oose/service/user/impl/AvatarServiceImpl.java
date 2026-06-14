@@ -27,6 +27,10 @@ public class AvatarServiceImpl implements IAvatarService {
             Customer customer = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
 
+            if (customer.isGoogleAccount()) {
+                throw new RuntimeException("Tài khoản Google sử dụng ảnh đại diện từ Google, không thể thay đổi");
+            }
+
             Map<?, ?> uploadResult = cloudinary.uploader().upload(
                     file.getBytes(),
                     ObjectUtils.asMap(

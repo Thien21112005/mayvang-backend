@@ -97,7 +97,7 @@ public class RoomServiceImpl implements IRoomService {
         RoomTypeResponse typeResponse = RoomTypeResponse.builder()
                 .typeID(room.getRoomType().getTypeID())
                 .typeName(room.getRoomType().getTypeName())
-                .priceRoom(room.getRoomType().getPriceRoom())
+                .priceRoom(room.getEffectivePrice())
                 .occupancy(room.getRoomType().getOccupancy())
                 .build();
 
