@@ -19,6 +19,9 @@ public class RevenueServiceImpl implements IRevenueService {
 
     private final IBookingRepository bookingRepository;
 
+    // Booking đã thanh toán: kể cả đã nhận phòng / đã trả phòng vẫn tính doanh thu
+    private static final List<String> PAID_STATUSES = List.of("confirmed", "checked_in", "checked_out");
+
     public RevenueServiceImpl(IBookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
@@ -28,10 +31,10 @@ public class RevenueServiceImpl implements IRevenueService {
         LocalDateTime from = getFromDate(period);
         LocalDateTime to = LocalDateTime.now();
 
-        // 1. Lấy booking
+        // 1. Lấy booking đã thanh toán (confirmed/checked_in/checked_out)
         List<Booking> bookings = (from == null)
-                ? bookingRepository.findByStatus("confirmed")
-                : bookingRepository.findByBookingDateBetweenAndStatus(from, to, "confirmed");
+                ? bookingRepository.findByStatusIn(PAID_STATUSES)
+                : bookingRepository.findByBookingDateBetweenAndStatusIn(from, to, PAID_STATUSES);
 
         // 2. Tính các chỉ số
         double totalRevenue = bookings.stream().mapToDouble(Booking::getTotalPrice).sum();

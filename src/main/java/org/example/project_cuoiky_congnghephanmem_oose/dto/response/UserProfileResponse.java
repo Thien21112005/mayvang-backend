@@ -21,4 +21,7 @@ public class UserProfileResponse {
 
     // true nếu tài khoản đăng nhập bằng Google (khóa đổi avatar/mật khẩu/username/email)
     private boolean googleAccount;
+
+    // JWT mới (chỉ trả khi username thay đổi, để frontend cập nhật token)
+    private String token;
 }

@@ -21,11 +21,17 @@ public interface IBookingRepository extends JpaRepository<Booking, Integer> {
     );
     List<Booking> findByStatus(String status);
 
-    // Lấy tất cả booking confirmed, group theo customer, sort theo tổng tiền giảm dần
+    // Dùng cho doanh thu: tính mọi booking đã thanh toán (confirmed/checked_in/checked_out)
+    List<Booking> findByStatusIn(List<String> statuses);
+    List<Booking> findByBookingDateBetweenAndStatusIn(
+            LocalDateTime from, LocalDateTime to, List<String> statuses
+    );
+
+    // Khách hàng tiềm năng: gom theo khách, tính mọi booking đã thanh toán (kể cả đã nhận/trả phòng)
     @Query("""
     SELECT b.customer, COUNT(b), SUM(b.totalPrice)
     FROM Booking b
-    WHERE b.status = 'confirmed'
+    WHERE b.status IN ('confirmed', 'checked_in', 'checked_out')
     GROUP BY b.customer
     ORDER BY SUM(b.totalPrice) DESC
 """)
@@ -51,7 +57,7 @@ public interface IBookingRepository extends JpaRepository<Booking, Integer> {
     );
 
     @Query("SELECT bd.room.roomID FROM BookingDetails bd " +
-            "WHERE bd.booking.status = 'confirmed' " +
+            "WHERE bd.booking.status IN ('confirmed', 'checked_in', 'checked_out') " +
             "AND bd.checkinDate <= :today " +
             "AND bd.checkoutDate > :today")
     List<Integer> findBookedRoomIdsByDate(@Param("today") LocalDate today);
