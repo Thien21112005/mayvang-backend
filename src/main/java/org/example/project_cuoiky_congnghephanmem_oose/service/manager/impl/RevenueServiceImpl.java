@@ -2,6 +2,7 @@ package org.example.project_cuoiky_congnghephanmem_oose.service.manager.impl;
 
 import org.example.project_cuoiky_congnghephanmem_oose.dto.response.RevenueResponse;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Booking;
+import org.example.project_cuoiky_congnghephanmem_oose.entity.state.BookingStatus;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IBookingRepository;
 import org.example.project_cuoiky_congnghephanmem_oose.service.manager.IRevenueService;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class RevenueServiceImpl implements IRevenueService {
     private final IBookingRepository bookingRepository;
 
     // Booking đã thanh toán: kể cả đã nhận phòng / đã trả phòng vẫn tính doanh thu
-    private static final List<String> PAID_STATUSES = List.of("confirmed", "checked_in", "checked_out");
+    private static final List<String> PAID_STATUSES = BookingStatus.PAID;
 
     public RevenueServiceImpl(IBookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;

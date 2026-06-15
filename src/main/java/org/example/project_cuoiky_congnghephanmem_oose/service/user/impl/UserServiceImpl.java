@@ -170,7 +170,7 @@ public class UserServiceImpl implements IUserService {
                 .orElse(null);
 
         boolean expired = booking.getExpiredAt() != null && !booking.getExpiredAt().isAfter(LocalDateTime.now());
-        boolean canRepay = "pending".equalsIgnoreCase(booking.getStatus()) && !expired;
+        boolean canRepay = booking.canBePaid() && !expired;
 
         double originalTotal = 0;
         for (BookingDetails detail : booking.getBookingDetails()) {
@@ -217,11 +217,11 @@ public class UserServiceImpl implements IUserService {
     private void syncExpiredBooking(Booking booking) {
         if (booking == null) return;
 
-        if ("pending".equalsIgnoreCase(booking.getStatus())
+        if (booking.isPending()
                 && booking.getExpiredAt() != null
                 && !booking.getExpiredAt().isAfter(LocalDateTime.now())) {
 
-            booking.setStatus("cancelled");
+            booking.cancel();
             bookingRepository.save(booking);
 
             paymentRepository.findByBookingBookingIDOrderByPaymentIDDesc(booking.getBookingID())
@@ -269,11 +269,11 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("Không có quyền hủy đơn đặt phòng này");
         }
 
-        if (!"pending".equalsIgnoreCase(booking.getStatus())) {
+        if (!booking.canBeCancelled()) {
             throw new RuntimeException("Chỉ có thể hủy đơn đặt phòng đang chờ thanh toán");
         }
 
-        booking.setStatus("cancelled");
+        booking.cancel();
         bookingRepository.save(booking);
 
         paymentRepository.findByBookingBookingIDOrderByPaymentIDDesc(booking.getBookingID())

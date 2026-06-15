@@ -6,6 +6,7 @@ import org.example.project_cuoiky_congnghephanmem_oose.entity.Booking;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.BookingDetails;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Customer;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Rooms;
+import org.example.project_cuoiky_congnghephanmem_oose.entity.state.BookingStatus;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IBookingRepository;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.ICustomerRepository;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IMembershipTierRepository;
@@ -109,7 +110,7 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = Booking.builder()
                 .bookingDate(LocalDateTime.now())
                 .totalPrice(totalPrice)
-                .status("pending")
+                .status(BookingStatus.PENDING)
                 .expiredAt(LocalDateTime.now().plusMinutes(HOLD_MINUTES))
                 .customer(customer)
                 .build();

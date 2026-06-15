@@ -3,6 +3,7 @@ package org.example.project_cuoiky_congnghephanmem_oose.scheduler;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Booking;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Payment;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Rooms;
+import org.example.project_cuoiky_congnghephanmem_oose.entity.state.BookingStatus;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IBookingRepository;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IPaymentRepository;
 import org.example.project_cuoiky_congnghephanmem_oose.repository.IRoomRepository;
@@ -68,7 +69,7 @@ public class BookingExpirationScheduler {
         System.out.println("[BOOKING_EXPIRE_JOB] Kiểm tra booking hết hạn vào " + now);
 
         List<Booking> expiredBookings = bookingRepository
-                .findByStatusIgnoreCaseAndExpiredAtBefore("pending", now);
+                .findByStatusIgnoreCaseAndExpiredAtBefore(BookingStatus.PENDING, now);
 
         if (expiredBookings.isEmpty()) {
             System.out.println("[BOOKING_EXPIRE_JOB] Không có booking nào hết hạn");
@@ -76,7 +77,7 @@ public class BookingExpirationScheduler {
         }
 
         for (Booking booking : expiredBookings) {
-            booking.setStatus("cancelled");
+            booking.cancel();
 
             List<Payment> payments = paymentRepository
                     .findByBookingBookingIDOrderByPaymentIDDesc(booking.getBookingID());
@@ -109,19 +110,19 @@ public class BookingExpirationScheduler {
         List<Booking> newlyCheckedOut = new ArrayList<>();
 
         // 1. Chuyển "confirmed" -> "checked_in" hoặc "checked_out"
-        List<Booking> confirmedBookings = bookingRepository.findByStatus("confirmed");
+        List<Booking> confirmedBookings = bookingRepository.findByStatus(BookingStatus.CONFIRMED);
         for (Booking booking : confirmedBookings) {
             if (booking.getBookingDetails() != null && !booking.getBookingDetails().isEmpty()) {
                 // Lấy ngày check-in/out của phòng đầu tiên làm đại diện
                 LocalDate checkin = booking.getBookingDetails().get(0).getCheckinDate();
                 LocalDate checkout = booking.getBookingDetails().get(0).getCheckoutDate();
-                
+
                 if (today.isAfter(checkout)) {
-                     booking.setStatus("checked_out");
+                     booking.checkOut();
                      checkOutCount++;
                      newlyCheckedOut.add(booking);
                 } else if (!today.isBefore(checkin)) { // today >= checkin
-                     booking.setStatus("checked_in");
+                     booking.checkIn();
                      checkInCount++;
                 }
             }
@@ -131,13 +132,13 @@ public class BookingExpirationScheduler {
         }
 
         // 2. Chuyển "checked_in" -> "checked_out" nếu đã qua ngày trả phòng
-        List<Booking> checkedInBookings = bookingRepository.findByStatus("checked_in");
+        List<Booking> checkedInBookings = bookingRepository.findByStatus(BookingStatus.CHECKED_IN);
         int extraCheckOutCount = 0;
         for (Booking booking : checkedInBookings) {
             if (booking.getBookingDetails() != null && !booking.getBookingDetails().isEmpty()) {
                 LocalDate checkout = booking.getBookingDetails().get(0).getCheckoutDate();
                 if (today.isAfter(checkout)) {
-                    booking.setStatus("checked_out");
+                    booking.checkOut();
                     extraCheckOutCount++;
                     newlyCheckedOut.add(booking);
                 }
