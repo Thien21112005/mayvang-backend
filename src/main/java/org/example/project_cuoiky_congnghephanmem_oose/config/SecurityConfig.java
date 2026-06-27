@@ -48,12 +48,24 @@ public class SecurityConfig {
                                 "/api/scheduler/stats"
                         ).permitAll()
 
-                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                        .requestMatchers(
+                                "/api/manager/**",
+                                "/api/rooms/*" // PUT /api/rooms/{id} chỉ dành cho MANAGER
+                        ).hasRole("MANAGER")
+
+                        // Phân quyền cho phần Reply của Review (Chỉ Manager mới được phản hồi)
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.PUT, "/api/reviews/*/reply"
+                        ).hasRole("MANAGER")
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE, "/api/reviews/*/reply"
+                        ).hasRole("MANAGER")
 
                         .requestMatchers(
                                 "/api/bookings/**",
                                 "/api/payments/**",
-                                "/api/users/**"
+                                "/api/users/**",
+                                "/api/reviews/**" // Các endpoint còn lại của reviews (POST, PUT, DELETE review, /me)
                         ).hasRole("CUSTOMER")
 
                         .anyRequest().authenticated()
