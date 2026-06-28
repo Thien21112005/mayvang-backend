@@ -158,7 +158,12 @@ public class PaymentServiceImpl implements IPaymentService {
                 bookingRepository.save(booking);
                 customerRepository.save(customer);
 
-                emailService.sendBookingConfirmationEmail(customer, booking, payment);
+                try {
+                    emailService.sendBookingConfirmationEmail(customer, booking, payment);
+                } catch (Exception ex) {
+                    System.err.println("Lỗi gửi email xác nhận đặt phòng: " + ex.getMessage());
+                    // Không ném lỗi ra ngoài để luồng thanh toán vẫn thành công
+                }
 
                 result.put("status", "success");
                 result.put("message", "Thanh toán thành công");
