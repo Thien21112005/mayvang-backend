@@ -8,36 +8,63 @@ import org.example.project_cuoiky_congnghephanmem_oose.entity.Payment;
 import org.example.project_cuoiky_congnghephanmem_oose.entity.Review;
 import org.example.project_cuoiky_congnghephanmem_oose.service.auth.IEmailService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServiceImpl implements IEmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
-    // Địa chỉ email gửi đi (chính là tài khoản SMTP)
-    @Value("${spring.mail.username}")
+    @Value("${brevo.sender.email:huyalex009@gmail.com}")
     private String fromEmail;
 
-    // Tên người gửi hiển thị trong hộp thư người nhận (đổi được trong application.properties)
-    @Value("${app.mail.sender-name:Mây Vàng}")
+    @Value("${brevo.sender.name:Mây Vàng}")
     private String senderName;
 
-    public EmailServiceImpl(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public EmailServiceImpl() {
     }
 
-    // ── Gửi 1 email HTML ────────────────────────────────────────────────────────
+    // ── Gửi 1 email HTML qua Brevo API ──────────────────────────────────────────
     private void sendHtml(String to, String subject, String html) throws Exception {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setFrom(fromEmail, senderName);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(html, true);
-        mailSender.send(mimeMessage);
+        String url = "https://api.brevo.com/v3/smtp/email";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api-key", brevoApiKey);
+        headers.set("Accept", "application/json");
+
+        Map<String, Object> sender = new HashMap<>();
+        sender.put("name", senderName);
+        sender.put("email", fromEmail);
+
+        Map<String, Object> toRecipient = new HashMap<>();
+        toRecipient.put("email", to);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("sender", sender);
+        body.put("to", List.of(toRecipient));
+        body.put("subject", subject);
+        body.put("htmlContent", html);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Brevo API trả về lỗi: " + response.getBody());
+        }
     }
 
     // ── Khung email sang trọng dùng chung (header vàng + footer), tối giản icon ──
