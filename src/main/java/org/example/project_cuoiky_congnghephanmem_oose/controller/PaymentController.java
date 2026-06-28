@@ -7,6 +7,7 @@ import org.example.project_cuoiky_congnghephanmem_oose.service.payment.IPaymentS
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -16,6 +17,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
+
+    @Value("${frontend.url:https://mayvang.vercel.app}")
+    private String frontendUrl;
 
     private final IPaymentService paymentService;
 
@@ -48,7 +52,7 @@ public class PaymentController {
         String earnedPoint = URLEncoder.encode(result.getOrDefault("earnedPoint", "0"), StandardCharsets.UTF_8);
         String bookingStatus = URLEncoder.encode(result.getOrDefault("bookingStatus", "pending"), StandardCharsets.UTF_8);
 
-        String redirectUrl = "http://127.0.0.1:5500/payment-result.html"
+        String redirectUrl = frontendUrl + "/payment-result.html"
                 + "?status=" + status
                 + "&message=" + message
                 + "&bookingId=" + bookingId
