@@ -259,4 +259,6 @@ CREATE INDEX idx_payment_booking_id ON Payment (bookingID);
 CREATE INDEX idx_review_customer_id ON Review (customerID);
 
 -- 7. Bảng MembershipTier
-CREATE INDEX idx_tier_min_point ON MembershipTier (minPoint);
+CREATE INDEX idx_tier_min_point ON MembershipTier (minPoint);
+
+CREATE UNIQUE INDEX idx_review_booking_id ON Review (bookingID);
