@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailServiceImpl implements IEmailService {
 
-    @Value("${brevo.api.key}")
+    @Value("${brevo.api.key:}")
     private String brevoApiKey;
 
     @Value("${brevo.sender.email:huyalex009@gmail.com}")
