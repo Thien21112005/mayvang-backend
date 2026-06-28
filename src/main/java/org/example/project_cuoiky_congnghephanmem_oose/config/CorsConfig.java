@@ -18,7 +18,8 @@ public class CorsConfig {
         // Cho phép frontend HTML/CSS/JS gọi vào
         config.setAllowedOrigins(List.of(
                 "http://localhost:5500",
-                "http://127.0.0.1:5500"
+                "http://127.0.0.1:5500",
+                "https://mayvang.vercel.app"
         ));
 
         config.setAllowedMethods(List.of(
