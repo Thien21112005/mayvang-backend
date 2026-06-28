@@ -224,3 +224,39 @@ UPDATE Rooms SET statusNote = 'Sửa cửa sổ' WHERE roomNumber = 'S603';
 UPDATE Rooms SET statusNote = 'Sửa hệ thống điện' WHERE roomNumber = 'S705';
 UPDATE Rooms SET statusNote = 'Thay thảm sàn' WHERE roomNumber = 'D1105';
 UPDATE Rooms SET statusNote = 'Đang cải tạo' WHERE roomNumber = 'FS1605';
+
+-- ==========================================
+-- TẠO INDEX TỐI ƯU HÓA TRUY VẤN (TỰ ĐỘNG THÊM VÀO SAU KHI INSERT)
+-- ==========================================
+
+-- 1. Bảng Users (Do dùng InheritanceType.JOINED nên username, email, phone nằm ở bảng User)
+CREATE UNIQUE INDEX idx_user_username ON User (username);
+CREATE UNIQUE INDEX idx_user_email ON User (email);
+CREATE UNIQUE INDEX idx_user_phone ON User (phone);
+
+-- 2. Bảng Booking
+CREATE INDEX idx_booking_user_id ON Booking (userID);
+CREATE INDEX idx_booking_status ON Booking (status);
+CREATE INDEX idx_booking_date ON Booking (bookingDate);
+CREATE INDEX idx_booking_status_expired ON Booking (status, expiredAt);
+CREATE INDEX idx_booking_status_date ON Booking (status, bookingDate);
+
+-- 3. Bảng BookingDetails (Quan trọng nhất cho query tìm phòng)
+CREATE INDEX idx_bd_room_id ON BookingDetails (roomID);
+CREATE INDEX idx_bd_booking_id ON BookingDetails (bookingID);
+CREATE INDEX idx_bd_room_dates ON BookingDetails (roomID, checkinDate, checkoutDate);
+
+-- 4. Bảng Rooms
+CREATE INDEX idx_room_type_id ON Rooms (typeID);
+CREATE INDEX idx_room_status ON Rooms (status);
+CREATE INDEX idx_room_status_maintenance ON Rooms (status, maintenanceEnd);
+
+-- 5. Bảng Payment
+CREATE UNIQUE INDEX idx_payment_txn_code ON Payment (transactionCode);
+CREATE INDEX idx_payment_booking_id ON Payment (bookingID);
+
+-- 6. Bảng Review
+CREATE INDEX idx_review_customer_id ON Review (customerID);
+
+-- 7. Bảng MembershipTier
+CREATE INDEX idx_tier_min_point ON MembershipTier (minPoint);
